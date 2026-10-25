@@ -1,0 +1,25 @@
+# diigukanakan untuk menghentikan atau mematikan secara paksa semua proses Streamlit dan Ngrok yang sedang berjalan di background server (Google Colab).
+!pkill -f streamlit
+!pkill -f ngrok
+
+from pyngrok import ngrok
+import subprocess
+import time
+
+# Ganti dengan Authtoken Ngrok asli yang didapat dari https://dashboard.ngrok.com/
+AUTHTOKEN = "isi_ngrok_token"
+
+try:
+    ngrok.set_auth_token(AUTHTOKEN)
+except Exception as e:
+    print(f"Catatan Authtoken: {e}")
+
+print("Membersihkan memori dan memulai ulang Streamlit...")
+subprocess.Popen(
+    ["streamlit", "run", "app.py", "--server.address=127.0.0.1"],
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE
+)
+
+time.sleep(4)
+tunnel = ngrok.connect(8501)
+print(f"✅ Aplikasi versi terbaru siap! Buka tautan baru ini: {tunnel.public_url}")
